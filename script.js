@@ -88,6 +88,7 @@ const preguntas = [
   "De una planificación me interesa cómo se va a llevar a la práctica y si es viable",
 ];
 
+const SHEET_BEST_URL = 'https://api.sheetbest.com/sheets/c214000f-e923-4fa8-8974-7fd29e986db1';
 const tbody = document.getElementById("preguntas-body");
 const username = document.getElementById("username");
 const userId = document.getElementById("userid");
@@ -156,46 +157,34 @@ async function enviarFormulario() {
     <p class="justificado">${descripciones[estiloGanador]}</p>
   `;
 
-    try {
-      // Fetch first 10 files
-      const valores = [
-        [username.value, userId.value, estiloGanador, ...respuestas.map(r => r.respuesta)] // Todos los datos en una sola fila
-      ];
-
-      const ultimaFilaVacia = await obtenerUltimaFilaVacia();
-
-      await gapi.client.sheets.spreadsheets.values.update({
-        spreadsheetId: '1FfwgKIEmwhdffLy1Ppx5cYTE0yA-i6XuSgASvsVoHFo',
-        range: `Hoja 1!A${ultimaFilaVacia}`,
-        valueInputOption: 'RAW',
-        resource: {
-          values: valores,
-        },
-      });
-    } catch (err) {
-      document.getElementById('content').innerText = err.message;
-      return;
-    }
+  enviarDatos(estiloGanador, respuestas);
 }
 
-async function obtenerUltimaFilaVacia() {
+async function enviarDatos(estiloGanador, respuestas) {
   try {
-    // Obtener todos los datos de la hoja
-    const response = await gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: '1FfwgKIEmwhdffLy1Ppx5cYTE0yA-i6XuSgASvsVoHFo',
-      range: `Hoja 1!A:A`, // Solo la columna A (puedes cambiarla según tus necesidades)
+
+    const payload = {
+      Nombre: username.value,
+      Documento: userId.value,
+      Perfil: estiloGanador,
+    };
+
+    respuestas.forEach((respuesta) => {
+      payload[respuesta.numero] = respuesta.respuesta;
     });
 
-    const rows = response.result.values;
-    // Si no hay datos, la primera fila está vacía
-    if (!rows || rows.length === 0) {
-      return 1;
-    }
+    const response = await fetch(SHEET_BEST_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
 
-    // La última fila vacía es la siguiente después de la última fila con datos
-    return rows.length + 1;
-  } catch (err) {
-    console.error("Error al obtener la última fila vacía:", err);
-    throw err;
+    const json = await response.json();
+    console.log(json);
+  } catch (error) {
+    console.error('Error al enviar los datos:', error);
   }
+  
 }
