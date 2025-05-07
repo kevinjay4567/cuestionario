@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cuestionario CEE</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div>
+
+    <h2>Autenticacion</h2>
+    <!--Add buttons to initiate auth sequence and sign out-->
+    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
+    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
+    </div>
+    
+
+    <div class="tabla-container">
+    <div class="formulario-usuario">
+      <input type="text" placeholder="Nombre" name="nombre" id="username" />
+      <input type="number" placeholder="Ej: 1001231234" name="documento" id="userid" />
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 50px;"></th>
+          <th>Ítem</th>
+          <th class="center">Sí</th>
+          <th class="center">No</th>
+        </tr>
+      </thead>
+      <tbody id="preguntas-body">
+        <!-- Las preguntas se insertarán aquí dinámicamente -->
+      </tbody>
+    </table>
+    <div class="boton-container">
+      <button onclick="enviarFormulario()">Enviar</button>
+    </div>
+    <div id="resultado" class="resultado-container"></div>
+  </div>
+    <script src="googleSheets.js"></script>
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+    <script src="script.js"></script>
+</body>
+</html>
